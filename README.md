@@ -1,6 +1,8 @@
 # Pokémon Uranium Scripts
 Short suite of Python scripts that come in handy when translating and localising Pokémon Uranium.
 
+To run any of the scripts, install Python 3, and then execute one via `py scriptname.py` or `python3 scriptname.py` in a command terminal.
+
 ## ObscureText
 Text obscuring tool for the burnt notebook pages in Map123.
 
