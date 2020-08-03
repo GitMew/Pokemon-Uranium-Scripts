@@ -12,27 +12,8 @@ from pathlib import Path
 import numpy as np
 
 
-def obscure(text_file: Path, burn_char="-", word_burn_parameter=0.465, char_burn_parameter=0.25):
-    """
-    Obscures some letters and words in the given text file, and writes the results to a new file.
-    :param text_file: The plaintext
-    :param word_burn_parameter: Parameter to determine whether each entire word will be burnt wholly by intention. Call
-                                this W, then the probability of burn for word length L is exp(-L*(W-1.5)). The default
-                                value W=0.465 makes all 1-letter words get burnt, 80% of 2-letter words, 50% of 3,
-                                33% of 4, 20% of 5, etc ...
-    :param char_burn_parameter: Probability that a character in an unburnt word will be burnt.
-    """
-    with open(text_file, "r+") as read_handle:
-        lines = read_handle.readlines()
-
-    with open(text_file.parent / (text_file.stem + "-obscured" + ".txt"), "w+", encoding="utf-8-sig") as write_handle:
-        burnt_lines = []
-        for line in lines:
-            burnt_line = []
-            for word in line.strip().split(" "):
-                burnt_line.append(obscureWord(word, burn_char, word_burn_parameter, char_burn_parameter))
-            burnt_lines.append(" ".join(burnt_line))
-        write_handle.write("\n".join(burnt_lines))
+def isValidTextFile(path: Path):
+    return path.is_file() and path_intl.suffix == ".txt"
 
 
 def obscureWord(word: str, burn_char, word_burn_parameter, char_burn_parameter):
@@ -60,5 +41,31 @@ def obscureWord(word: str, burn_char, word_burn_parameter, char_burn_parameter):
     return burnt_word
 
 
+def obscureFile(text_file: Path, burn_char="-", word_burn_parameter=0.465, char_burn_parameter=0.25):
+    """
+    Obscures some letters and words in the given text file, and writes the results to a new file.
+    :param text_file: The plaintext
+    :param word_burn_parameter: Parameter to determine whether each entire word will be burnt wholly by intention. Call
+                                this W, then the probability of burn for word length L is exp(-L*(W-1.5)). The default
+                                value W=0.465 makes all 1-letter words get burnt, 80% of 2-letter words, 50% of 3,
+                                33% of 4, 20% of 5, etc ...
+    :param char_burn_parameter: Probability that a character in an unburnt word will be burnt.
+    """
+    if not isValidTextFile(text_file):
+        raise ValueError("Invalid text file.")
+
+    with open(text_file, "r+", encoding="utf-8-sig") as read_handle:
+        lines = read_handle.readlines()
+
+    with open(text_file.parent / (text_file.stem + "_obscured" + ".txt"), "w+", encoding="utf-8") as write_handle:
+        burnt_lines = []
+        for line in lines:
+            burnt_line = []
+            for word in line.strip().split(" "):
+                burnt_line.append(obscureWord(word, burn_char, word_burn_parameter, char_burn_parameter))
+            burnt_lines.append(" ".join(burnt_line))
+        write_handle.write("\n".join(burnt_lines))
+
+
 if __name__ == "__main__":
-    obscure(Path("data/og.txt"))
+    obscureFile(Path("Enter file path of text file to obscure the lines of: "))
