@@ -1,19 +1,15 @@
-from pathlib import Path
-import os
-
-
-def isValidIntl(path_intl: Path):
-    return path_intl.is_file() and path_intl.suffix == ".txt"
+import CombineTextFiles as Combine
+from ScriptUtilities import *
 
 
 def whitenImmediateDuplicates(intl: Path, line_amount: int=-1):
-    if not isValidIntl(intl):
+    if not isValidTextFile(intl):
         raise ValueError("Invalid Intl file.")
 
-    with open(intl, "r+", encoding="utf-8-sig") as handle:
-        lines = handle.readlines()
+    lines = getTxtLines(intl)
 
-    with open(intl.parent / (intl.stem + "_whitened" + ".txt"), "w+", encoding="utf-8") as handle:
+    results_file = intl.parent / (intl.stem + "_whitened" + ".txt")
+    with open(results_file, "w+", encoding="utf-8") as handle:
         i = 0
         count = 0
         while i < len(lines) - 1:
@@ -24,13 +20,16 @@ def whitenImmediateDuplicates(intl: Path, line_amount: int=-1):
             i += 1
         handle.write(lines[-1] if not lines[-1].endswith("\n") else lines[-1][:-1])
 
+    return results_file
+
 
 def batchProcessFolder(folder: Path, line_amount: int=-1):
-    (_, _, filenames) = next(os.walk(folder))
-    for filename in filenames:
-        path = folder / filename
-        if isValidIntl(path):
-            whitenImmediateDuplicates(path, line_amount)
+    if not folder.is_dir():
+        raise ValueError("Invalid directory path.")
+
+    paths = Combine.getFilesWithExtension([folder], ".txt", recursive=False)
+    for path in paths:
+        whitenImmediateDuplicates(path, line_amount)
 
 
 if __name__ == "__main__":

@@ -7,13 +7,9 @@ Author: T. "Mew" B.
 Date: 2020-07-30
 Licence: CC-3.0 BY
 """
-
-from pathlib import Path
 import numpy as np
 
-
-def isValidTextFile(path: Path):
-    return path.is_file() and path_intl.suffix == ".txt"
+from ScriptUtilities import *
 
 
 def obscureWord(word: str, burn_char, word_burn_parameter, char_burn_parameter):
@@ -51,11 +47,9 @@ def obscureFile(text_file: Path, burn_char="-", word_burn_parameter=0.465, char_
                                 33% of 4, 20% of 5, etc ...
     :param char_burn_parameter: Probability that a character in an unburnt word will be burnt.
     """
-    if not isValidTextFile(text_file):
+    if isValidTextFile(text_file):
         raise ValueError("Invalid text file.")
-
-    with open(text_file, "r+", encoding="utf-8-sig") as read_handle:
-        lines = read_handle.readlines()
+    lines = getTxtLines(text_file)
 
     with open(text_file.parent / (text_file.stem + "_obscured" + ".txt"), "w+", encoding="utf-8") as write_handle:
         burnt_lines = []
